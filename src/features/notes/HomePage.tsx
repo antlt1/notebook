@@ -7,8 +7,8 @@ import { createNote, deleteNote, renameNote } from '@/services/noteService'
 import { formatRelativeTime } from '@/utils/date'
 import { mapAuthError, mapFirestoreError } from '@/utils/firebaseErrors'
 import { Sidebar } from './components/Sidebar'
-import { NoteEditor } from './editor/NoteEditor'
 import { useNotes } from './hooks/useNotes'
+import { NoteWorkspace } from './NoteWorkspace'
 
 export function HomePage() {
   const { user } = useAuth()
@@ -120,8 +120,8 @@ export function HomePage() {
               </p>
             </header>
 
-            {/* `key` để mỗi note có editor riêng: đổi note là remount + flush autosave. */}
-            <NoteEditor key={selectedNote.id} note={selectedNote} />
+            {/* `key` để mỗi note có store tab + autosave riêng: đổi note là remount + flush. */}
+            <NoteWorkspace key={selectedNote.id} note={selectedNote} />
           </article>
         )}
       </main>

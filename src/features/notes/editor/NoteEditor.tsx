@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { EditorContent, useEditor, useEditorState, type Editor } from '@tiptap/react'
-import type { Note } from '@/types/note'
-import { useAutosave } from '../hooks/useAutosave'
+import type { NoteTab } from '@/types/note'
+import type { UseAutosaveResult } from '../hooks/useAutosave'
 import { createEditorExtensions } from './extensions'
 import { SaveStatus } from './SaveStatus'
 import { SlashMenu } from './SlashMenu'
@@ -9,7 +9,13 @@ import { Toolbar } from './Toolbar'
 import { useSlashMenu, type SlashBridge } from './useSlashMenu'
 
 interface NoteEditorProps {
-  note: Note
+  /** Tab đang mở. Remount theo `key` khi đổi tab nên không cần theo dõi id ở đây. */
+  tab: NoteTab
+  /** Trạng thái autosave dùng chung cho cả note (nhiều tab). */
+  save: Pick<UseAutosaveResult, 'status' | 'savedAt' | 'error' | 'retry'>
+  onContentChange: (markdown: string) => void
+  /** Ghi ngay: blur, Ctrl/Cmd+S, ẩn tab. */
+  onFlush: () => void
 }
 
 interface TextStats {
@@ -27,28 +33,18 @@ function readStats(editor: Editor): TextStats {
   }
 }
 
-/** Tab đang sửa: Phase 4 chỉ dùng tab đầu tiên (tab bar là Phase 5). */
-function pickActiveTab(note: Note) {
-  return [...note.tabs].sort((a, b) => a.order - b.order)[0] ?? null
-}
-
 /**
- * Editor của một tab: Tiptap + Markdown (Q4), autosave debounce (Mục 7.5),
- * toolbar, menu `/` và đồng bộ realtime từ thiết bị khác.
+ * Editor của **một tab**: Tiptap + Markdown (Q4), toolbar, menu `/` và đồng bộ
+ * realtime từ thiết bị khác. Nội dung do `NoteWorkspace` giữ để nhiều tab dùng
+ * chung một hàng đợi autosave (Mục 7.5).
  */
-export function NoteEditor({ note }: NoteEditorProps) {
-  const [activeTab] = useState(() => pickActiveTab(note))
-
-  const autosave = useAutosave(note.id)
-  const { flush } = autosave
+export function NoteEditor({ tab, save, onContentChange, onFlush }: NoteEditorProps) {
   const slashBridgeRef = useRef<SlashBridge | null>(null)
-  // Bản `tabs` mới nhất do máy này sửa (khác với `note.tabs` do server trả về).
-  const tabsRef = useRef(note.tabs)
-  const lastMarkdownRef = useRef(activeTab?.value ?? '')
+  const lastMarkdownRef = useRef(tab.value)
 
   const editor = useEditor({
     extensions: createEditorExtensions(),
-    content: activeTab?.value ?? '',
+    content: tab.value,
     contentType: 'markdown',
     editorProps: {
       attributes: {
@@ -68,16 +64,10 @@ export function NoteEditor({ note }: NoteEditorProps) {
         return
       }
       lastMarkdownRef.current = markdown
-
-      if (activeTab !== null) {
-        tabsRef.current = tabsRef.current.map((tab) =>
-          tab.id === activeTab.id ? { ...tab, value: markdown } : tab,
-        )
-        autosave.queue(tabsRef.current)
-      }
+      onContentChange(markdown)
     },
     onSelectionUpdate: ({ editor: current }) => slashBridgeRef.current?.sync(current),
-    onBlur: () => flush(),
+    onBlur: onFlush,
   })
 
   const slash = useSlashMenu(editor, slashBridgeRef)
@@ -89,8 +79,7 @@ export function NoteEditor({ note }: NoteEditorProps) {
   })
   const textStats = stats ?? EMPTY_STATS
 
-  const activeTabValue = note.tabs.find((tab) => tab.id === activeTab?.id)?.value ?? ''
-  const saveStatus = autosave.status
+  const saveStatus = save.status
 
   // Đồng bộ nội dung từ thiết bị khác. Bỏ qua khi máy này đang có thay đổi chưa
   // ghi để không làm nhảy con trỏ / mất chữ đang gõ (Mục 7.5).
@@ -99,25 +88,23 @@ export function NoteEditor({ note }: NoteEditorProps) {
       return
     }
 
-    if (activeTabValue !== editor.getMarkdown()) {
-      editor.commands.setContent(activeTabValue, { contentType: 'markdown', emitUpdate: false })
-      lastMarkdownRef.current = activeTabValue
+    if (tab.value !== editor.getMarkdown()) {
+      editor.commands.setContent(tab.value, { contentType: 'markdown', emitUpdate: false })
+      lastMarkdownRef.current = tab.value
     }
-    // Các tab khác lấy theo server; tab đang sửa sẽ được ghi đè ở lần gõ kế tiếp.
-    tabsRef.current = note.tabs
-  }, [activeTabValue, editor, note.tabs, saveStatus])
+  }, [editor, saveStatus, tab.value])
 
   // Ctrl/Cmd+S = lưu ngay (Mục 7.1); ẩn tab (điện thoại) cũng cố gắng ghi nốt.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
         event.preventDefault()
-        flush()
+        onFlush()
       }
     }
     function handleVisibilityChange() {
       if (document.visibilityState === 'hidden') {
-        flush()
+        onFlush()
       }
     }
 
@@ -127,7 +114,7 @@ export function NoteEditor({ note }: NoteEditorProps) {
       window.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [flush])
+  }, [onFlush])
 
   if (editor === null) {
     return <div className="h-64 animate-pulse rounded-xl border bg-muted/40" aria-hidden="true" />
@@ -154,10 +141,10 @@ export function NoteEditor({ note }: NoteEditorProps) {
           {textStats.words} từ · {textStats.chars} ký tự
         </span>
         <SaveStatus
-          status={autosave.status}
-          savedAt={autosave.savedAt}
-          error={autosave.error}
-          onRetry={autosave.retry}
+          status={save.status}
+          savedAt={save.savedAt}
+          error={save.error}
+          onRetry={save.retry}
         />
       </div>
     </div>

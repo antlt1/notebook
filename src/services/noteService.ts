@@ -14,12 +14,11 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { MAX_TABS, MAX_TITLE_LENGTH } from '@/lib/noteLimits'
 import type { Note, NoteTab } from '@/types/note'
 
 export const DEFAULT_TITLE = 'Ghi chú mới'
-export const MAX_TITLE_LENGTH = 200
-export const MAX_TABS = 30
-export const MAX_TAB_NAME_LENGTH = 50
+export { MAX_TAB_NAME_LENGTH, MAX_TABS, MAX_TITLE_LENGTH } from '@/lib/noteLimits'
 
 const NOTES_COLLECTION = 'notes'
 
