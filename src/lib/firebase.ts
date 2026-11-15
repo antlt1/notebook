@@ -1,6 +1,7 @@
-import { initializeApp } from 'firebase/app'
-import { GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { getApp, getApps, initializeApp } from 'firebase/app'
+import { GoogleAuthProvider, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
+  connectFirestoreEmulator,
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
@@ -15,7 +16,9 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-export const app = initializeApp(firebaseConfig)
+// Reuse the app across HMR reloads so emulator connections are not duplicated.
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
+
 export const auth = getAuth(app)
 export const googleProvider = new GoogleAuthProvider()
 
@@ -23,3 +26,16 @@ export const googleProvider = new GoogleAuthProvider()
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 })
+
+const emulatorFlags = globalThis as typeof globalThis & { __ghichuEmulatorsConnected?: boolean }
+
+// Emulator is dev-only so a production build can never point at localhost.
+if (
+  import.meta.env.DEV &&
+  import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true' &&
+  emulatorFlags.__ghichuEmulatorsConnected !== true
+) {
+  emulatorFlags.__ghichuEmulatorsConnected = true
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+  connectFirestoreEmulator(db, '127.0.0.1', 8080)
+}

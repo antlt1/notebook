@@ -97,7 +97,10 @@ VITE_FIREBASE_STORAGE_BUCKET=db-ghichu.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=346417565582
 VITE_FIREBASE_APP_ID=1:346417565582:web:2197ad4c74f3938fe81edf
 VITE_FIREBASE_MEASUREMENT_ID=G-KLE4B8EHYS
+VITE_USE_FIREBASE_EMULATOR=true
 ```
+
+> `VITE_USE_FIREBASE_EMULATOR=true` → Auth trỏ `127.0.0.1:9099`, Firestore trỏ `127.0.0.1:8080`. Đặt `false`/bỏ trống để dùng Firebase thật. `VITE_FIREBASE_MEASUREMENT_ID` đã bỏ khỏi config vì MVP không dùng Analytics (Q14).
 
 > **Lưu ý bảo mật:** Firebase web `apiKey` **không phải bí mật** (nó nằm trong bundle JS công khai nào cũng thấy). Thứ thực sự bảo vệ dữ liệu là **Security Rules** (Mục 6) + App Check. Dù vậy: **không hardcode vào source**, **không commit `.env*`**, và cung cấp file `.env.example` (giá trị rỗng) cho repo.
 
@@ -552,11 +555,11 @@ firebase deploy --only hosting                             # ⚠️ PHẢI HỎI
 - [x] Cấu hình Firebase Emulator + `firebase.json`
 - [ ] 🚪 App chạy được, hiện trang trống, lint/test/build xanh
 
-### Phase 2 — Xác thực
-- [ ] `authService`, `AuthProvider`, `ProtectedRoute`
-- [ ] Trang Login / Register / Reset password; Google sign-in
-- [ ] Dịch lỗi Auth sang tiếng Việt
-- 🚪 Đăng ký → đăng nhập → đăng xuất → reload vẫn giữ phiên
+### Phase 2 — Xác thực ✅ XONG 2026-11-14
+- [x] `authService`, `AuthProvider`, `ProtectedRoute`
+- [x] Trang Login / Register / Reset password; Google sign-in
+- [x] Dịch lỗi Auth sang tiếng Việt
+- [ ] 🚪 Đăng ký → đăng nhập → đăng xuất → reload vẫn giữ phiên
 
 ### Phase 3 — Ghi chú (CRUD) + Sidebar
 - [ ] `noteService`, `useNotes` (realtime), Sidebar, tìm theo tiêu đề
@@ -660,8 +663,9 @@ Chế độ Markdown thô/Preview · Outline H1–H4 · Ghim · Thùng rác · T
 ## 16. Trạng thái hiện tại & bước tiếp theo
 
 > **Phase 0 đã chốt (2026-11-14).** 16/16 câu ở Mục 14 đã có câu trả lời; tech stack + schema được duyệt.
-> **Phase 1 đã dựng xong (2026-11-14).** Vite 8 + React 19 + TS 6, Tailwind v4 + shadcn/ui (preset Nova), ESLint 10 + Prettier, Vitest + RTL, `src/lib/firebase.ts`, `firebase.json` + rules + indexes, Firebase CLI 15. Emulator chạy được; `typecheck`/`lint`/`test`/`build` đều xanh. Repo **chưa có commit nào**.
+> **Phase 1 đã dựng xong (2026-11-14).** Vite 8 + React 19 + TS 6, Tailwind v4 + shadcn/ui (preset Nova), ESLint 10 + Prettier, Vitest + RTL, `src/lib/firebase.ts`, `firebase.json` + rules + indexes, Firebase CLI 15. Emulator chạy được; `typecheck`/`lint`/`test`/`build` đều xanh.
+> **Phase 2 đã dựng xong (2026-11-14).** `authService`, `AuthProvider` + `useAuth`, `ProtectedRoute` / `PublicOnlyRoute`, 3 trang xác thực, map lỗi Auth → tiếng Việt, kết nối Emulator qua `VITE_USE_FIREBASE_EMULATOR`. Đã test tay trên Emulator: đăng ký → vào app → reload giữ phiên → đăng xuất → sai mật khẩu báo đúng tiếng Việt → đăng nhập lại → gửi email đặt lại mật khẩu. **Google popup chưa test được trên Emulator.**
 
-Bước tiếp theo là **Phase 2 — Xác thực**: `authService`, `AuthProvider`, `ProtectedRoute`, các trang Login/Register/Reset password, Google sign-in, dịch lỗi Auth sang tiếng Việt. Trước khi làm cần chốt: có bật xác minh email hay không.
+Bước tiếp theo là **Phase 3 — Ghi chú (CRUD) + Sidebar**: `noteService`, `useNotes` realtime, Sidebar, tìm theo tiêu đề, tạo/đổi tên/xoá note, và **viết test Security Rules bằng Emulator** (làm ngay trong phase này).
 
 Khi bắt đầu một phiên mới, agent đọc lại file này và **không hỏi lại các mục đã chốt**; chỉ hỏi khi có mâu thuẫn hoặc khi sang quyết định mới thuộc Mục 10.2.

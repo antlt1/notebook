@@ -1,12 +1,28 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from '@/features/auth/AuthProvider'
+import { LoginPage } from '@/features/auth/LoginPage'
+import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
+import { PublicOnlyRoute } from '@/features/auth/PublicOnlyRoute'
+import { RegisterPage } from '@/features/auth/RegisterPage'
+import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
+import { HomePage } from '@/features/notes/HomePage'
+
 export default function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-white">
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold">GhiChu Notebook</h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          Dự án đã khởi tạo. Giao diện sẽ có ở các phase tiếp theo.
-        </p>
-      </div>
-    </main>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
