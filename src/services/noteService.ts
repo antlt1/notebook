@@ -85,6 +85,21 @@ export async function renameNote(noteId: string, title: string): Promise<void> {
   })
 }
 
+/**
+ * Ghi nội dung của mọi tab. Phase 4 chỉ sửa một tab nhưng schema lưu cả mảng
+ * `tabs[]` (Q6) nên vẫn update nguyên mảng + `updatedAt` để sidebar sắp xếp lại.
+ */
+export async function saveTabs(noteId: string, tabs: NoteTab[]): Promise<void> {
+  if (tabs.length === 0 || tabs.length > MAX_TABS) {
+    throw new Error('Số lượng tab không hợp lệ')
+  }
+
+  await updateDoc(noteRef(noteId), {
+    tabs,
+    updatedAt: serverTimestamp(),
+  })
+}
+
 export async function deleteNote(noteId: string): Promise<void> {
   await deleteDoc(noteRef(noteId))
 }

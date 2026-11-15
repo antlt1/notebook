@@ -129,3 +129,154 @@
     @apply font-sans;
   }
 }
+
+@layer components {
+  /* ---------- Editor (Phase 4 — Mục 7.4) ---------- */
+  .note-editor .tiptap {
+    @apply min-h-[45vh] text-base leading-7 outline-none;
+  }
+
+  .note-editor .tiptap > * + * {
+    @apply mt-3;
+  }
+
+  .note-editor .tiptap h1 {
+    @apply mt-8 mb-3 border-b border-border pb-2 text-[2rem] leading-tight font-bold tracking-tight;
+  }
+
+  .note-editor .tiptap h2 {
+    @apply mt-6 mb-2 text-2xl leading-tight font-semibold tracking-tight;
+  }
+
+  .note-editor .tiptap h3 {
+    @apply mt-5 mb-2 text-xl leading-snug font-semibold;
+  }
+
+  /* H4 nhạt hơn để vẫn phân cấp được dù chữ nhỏ. */
+  .note-editor .tiptap h4 {
+    @apply mt-4 mb-1 text-[1.0625rem] font-semibold text-muted-foreground;
+  }
+
+  .note-editor .tiptap ul {
+    @apply list-disc pl-6;
+  }
+
+  .note-editor .tiptap ol {
+    @apply list-decimal pl-6;
+  }
+
+  .note-editor .tiptap li::marker {
+    @apply text-muted-foreground;
+  }
+
+  .note-editor .tiptap li > p {
+    @apply my-0;
+  }
+
+  .note-editor .tiptap li > ul,
+  .note-editor .tiptap li > ol {
+    @apply mt-1;
+  }
+
+  .note-editor .tiptap blockquote {
+    @apply border-l-[3px] border-primary/40 bg-muted/40 py-1 pl-4 text-muted-foreground;
+  }
+
+  .note-editor .tiptap code {
+    @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.875em];
+  }
+
+  .note-editor .tiptap pre {
+    @apply my-4 overflow-x-auto rounded-lg bg-muted p-4 font-mono text-sm leading-6;
+  }
+
+  .note-editor .tiptap pre code {
+    @apply bg-transparent p-0 text-[0.875rem];
+  }
+
+  .note-editor .tiptap a {
+    @apply text-primary underline underline-offset-2;
+  }
+
+  .note-editor .tiptap hr {
+    @apply my-8 border-border;
+  }
+
+  /* Placeholder của extension Placeholder (class is-empty / is-editor-empty). */
+  .note-editor .tiptap p.is-editor-empty:first-child::before,
+  .note-editor .tiptap p.is-empty::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-left h-0 text-muted-foreground;
+  }
+
+  /* ---------- Checklist ---------- */
+  .note-editor .tiptap ul[data-type='taskList'] {
+    @apply list-none pl-1;
+  }
+
+  .note-editor .tiptap ul[data-type='taskList'] li {
+    @apply flex items-start gap-2;
+  }
+
+  .note-editor .tiptap ul[data-type='taskList'] li > label {
+    @apply mt-1.5 shrink-0 select-none;
+  }
+
+  .note-editor .tiptap ul[data-type='taskList'] li > div {
+    @apply min-w-0 flex-1;
+  }
+
+  .note-editor .tiptap ul[data-type='taskList'] input[type='checkbox'] {
+    @apply size-4 accent-primary;
+  }
+
+  .note-editor .tiptap ul[data-type='taskList'] li[data-checked='true'] > div {
+    @apply text-muted-foreground line-through;
+  }
+
+  /* ---------- Highlight cú pháp (lowlight/highlight.js) ---------- */
+  .note-editor .hljs-comment,
+  .note-editor .hljs-quote {
+    @apply text-muted-foreground italic;
+  }
+
+  .note-editor .hljs-keyword,
+  .note-editor .hljs-selector-tag,
+  .note-editor .hljs-literal,
+  .note-editor .hljs-section,
+  .note-editor .hljs-doctag,
+  .note-editor .hljs-type,
+  .note-editor .hljs-name {
+    @apply font-medium text-violet-700 dark:text-violet-300;
+  }
+
+  .note-editor .hljs-string,
+  .note-editor .hljs-regexp,
+  .note-editor .hljs-attribute {
+    @apply text-emerald-700 dark:text-emerald-300;
+  }
+
+  .note-editor .hljs-number,
+  .note-editor .hljs-symbol,
+  .note-editor .hljs-bullet,
+  .note-editor .hljs-link {
+    @apply text-sky-700 dark:text-sky-300;
+  }
+
+  .note-editor .hljs-title,
+  .note-editor .hljs-attr,
+  .note-editor .hljs-variable,
+  .note-editor .hljs-template-variable,
+  .note-editor .hljs-property {
+    @apply text-amber-700 dark:text-amber-300;
+  }
+
+  .note-editor .hljs-built_in,
+  .note-editor .hljs-meta {
+    @apply text-rose-700 dark:text-rose-300;
+  }
+
+  .note-editor .hljs-emphasis {
+    @apply italic;
+  }
+}

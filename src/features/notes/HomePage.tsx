@@ -7,6 +7,7 @@ import { createNote, deleteNote, renameNote } from '@/services/noteService'
 import { formatRelativeTime } from '@/utils/date'
 import { mapAuthError, mapFirestoreError } from '@/utils/firebaseErrors'
 import { Sidebar } from './components/Sidebar'
+import { NoteEditor } from './editor/NoteEditor'
 import { useNotes } from './hooks/useNotes'
 
 export function HomePage() {
@@ -119,9 +120,8 @@ export function HomePage() {
               </p>
             </header>
 
-            <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-              Editor và các tab sẽ có ở Phase 4–5.
-            </div>
+            {/* `key` để mỗi note có editor riêng: đổi note là remount + flush autosave. */}
+            <NoteEditor key={selectedNote.id} note={selectedNote} />
           </article>
         )}
       </main>
