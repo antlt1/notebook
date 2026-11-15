@@ -90,7 +90,7 @@
 ### 4.2 Biến môi trường — file `.env.local` (đã có trong `.gitignore`)
 
 ```env
-VITE_FIREBASE_API_KEY=AIzaSyAAtF8_ZcWJK8P6wBzexAVJ23coupkME3o
+VITE_FIREBASE_API_KEY=<api-key-lay-tu-Google-Cloud-Console>
 VITE_FIREBASE_AUTH_DOMAIN=db-ghichu.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=db-ghichu
 VITE_FIREBASE_STORAGE_BUCKET=db-ghichu.firebasestorage.app
@@ -99,6 +99,9 @@ VITE_FIREBASE_APP_ID=1:346417565582:web:2197ad4c74f3938fe81edf
 VITE_FIREBASE_MEASUREMENT_ID=G-KLE4B8EHYS
 VITE_USE_FIREBASE_EMULATOR=true
 ```
+
+> 🚨 **KHÔNG BAO GIỜ ghi giá trị `VITE_FIREBASE_API_KEY` thật vào bất kỳ file nào được commit** (kể cả file tài liệu như `AGENTS.md`). Ngày 2026-11-15 GitHub Secret Scanning báo lộ key vì key thật từng nằm ở đúng mục này. Chỉ dùng placeholder; giá trị thật chỉ sống trong `.env.local` (đã gitignore) và trong Google Cloud Console.
+> Key web của Firebase **không phải bí mật** (nó nằm trong bundle JS ai cũng đọc được), nhưng vẫn phải **giới hạn theo HTTP referrer + chỉ bật đúng API Firebase cần dùng**, nếu không người khác dùng ké được quota/project của bạn. Xem Mục 13.
 
 > `VITE_USE_FIREBASE_EMULATOR=true` → Auth trỏ `127.0.0.1:9099`, Firestore trỏ `127.0.0.1:8080`. Đặt `false`/bỏ trống để dùng Firebase thật. `VITE_FIREBASE_MEASUREMENT_ID` đã bỏ khỏi config vì MVP không dùng Analytics (Q14).
 
