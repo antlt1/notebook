@@ -16,6 +16,17 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   'auth/network-request-failed': 'Lỗi mạng, thử lại sau',
 }
 
+const FIRESTORE_ERROR_MESSAGES: Record<string, string> = {
+  'permission-denied': 'Bạn không có quyền với ghi chú này',
+  unauthenticated: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại',
+  unavailable: 'Mất kết nối, đang thử lại…',
+  'deadline-exceeded': 'Máy chủ phản hồi chậm, thử lại sau',
+  'not-found': 'Ghi chú không còn tồn tại',
+  'failed-precondition': 'Truy vấn chưa sẵn sàng, thử lại sau',
+  'resource-exhausted': 'Tạm thời quá tải, thử lại sau',
+  aborted: 'Ghi chú vừa bị thay đổi, thử lại',
+}
+
 const FALLBACK_MESSAGE = 'Đã có lỗi xảy ra, vui lòng thử lại'
 
 function getErrorCode(error: unknown): string | null {
@@ -32,4 +43,14 @@ export function mapAuthError(error: unknown): string {
     return AUTH_ERROR_MESSAGES[code]
   }
   return FALLBACK_MESSAGE
+}
+
+export function mapFirestoreError(error: unknown): string {
+  const code = getErrorCode(error)
+  if (code !== null) {
+    return code in FIRESTORE_ERROR_MESSAGES ? FIRESTORE_ERROR_MESSAGES[code] : FALLBACK_MESSAGE
+  }
+
+  // Lỗi không phải từ Firestore (ví dụ validation của noteService) đã là tiếng Việt sẵn.
+  return error instanceof Error && error.message.length > 0 ? error.message : FALLBACK_MESSAGE
 }

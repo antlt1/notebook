@@ -1,5 +1,6 @@
 import type { Timestamp } from 'firebase/firestore'
 
+/** Một tab trong ghi chú. `value` là nội dung Markdown của riêng tab đó (Q4, Q5). */
 export interface NoteTab {
   id: string
   name: string
@@ -7,6 +8,7 @@ export interface NoteTab {
   order: number
 }
 
+/** Document `notes/{noteId}` — `id` là Document ID nên không lưu thành field. */
 export interface Note {
   id: string
   userId: string
@@ -15,7 +17,3 @@ export interface Note {
   createdAt: Timestamp
   updatedAt: Timestamp
 }
-
-export const MAX_TABS_PER_NOTE = 30
-export const MAX_TITLE_LENGTH = 200
-export const MAX_TAB_NAME_LENGTH = 50

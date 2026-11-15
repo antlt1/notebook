@@ -19,6 +19,7 @@ export default function App() {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="n/:noteId" element={<HomePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
