@@ -33,3 +33,6 @@ firestore-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Local dev tools (portable JRE for the Firestore emulator)
+.tools/

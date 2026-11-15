@@ -526,10 +526,19 @@ Phải **chạy thử trên Emulator**, không chạy thử trên dữ liệu th
 npm install
 npm run dev                   # chạy local
 npm run typecheck && npm run lint && npm run test && npm run build
-firebase emulators:start      # Auth + Firestore emulator
+npm run test:rules            # test Security Rules (cần emulator đang chạy)
+npm run emulators             # Auth + Firestore emulator
 firebase deploy --only firestore:rules,firestore:indexes   # ⚠️ PHẢI HỎI trước
 firebase deploy --only hosting                             # ⚠️ PHẢI HỎI trước
 ```
+
+> **Emulator cần Java 21+** — firebase-tools hiện từ chối Java < 21 (không phải 11/17). Máy dev dùng JRE portable, đã gitignore ở `.tools/jre21`:
+> ```bash
+export JAVA_HOME="$(cygpath -m "$(pwd)/.tools/jre21/jdk-21.0.13+9-jre")"
+export PATH="$JAVA_HOME/bin:$PATH"
+npm run emulators
+> ```
+> Không có `.tools/jre21` (máy mới) thì tải lại: `api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jre/hotspot/normal/eclipse?project=jdk`.
 
 ### 10.9 Mẫu báo cáo sau mỗi task
 
@@ -564,11 +573,14 @@ firebase deploy --only hosting                             # ⚠️ PHẢI HỎI
 - [x] Dịch lỗi Auth sang tiếng Việt
 - [ ] 🚪 Đăng ký → đăng nhập → đăng xuất → reload vẫn giữ phiên
 
-### Phase 3 — Ghi chú (CRUD) + Sidebar
-- [ ] `noteService`, `useNotes` (realtime), Sidebar, tìm theo tiêu đề
-- [ ] Tạo / đổi tên / xoá note (có xác nhận)
-- [ ] **Viết `firestore.rules` + test rules** (làm ngay phase này, không để cuối)
-- 🚪 Note của user A không thể thấy/sửa bởi user B (test xanh)
+### Phase 3 — Ghi chú (CRUD) + Sidebar ✅ XONG 2026-11-15
+- [x] `noteService`, `useNotes` (realtime), Sidebar, tìm theo tiêu đề
+- [x] Tạo / đổi tên / xoá note (có xác nhận)
+- [x] **Viết `firestore.rules` + test rules** (làm ngay phase này, không để cuối)
+- [x] 🚪 Note của user A không thể thấy/sửa bởi user B (`npm run test:rules`: 9/9 xanh)
+
+> Ghi chú: CRUD đã verify tay trên Firestore Emulator (tạo → đổi tên → xoá, doc đúng schema).
+> Rules test chạy bằng `npm run test:rules` và **cần emulator đang chạy** (xem 10.8).
 
 ### Phase 4 — Editor
 - [ ] Tiptap: heading H1–H4, định dạng cơ bản, danh sách, checklist, quote, code block, hr, link
@@ -672,6 +684,7 @@ Chế độ Markdown thô/Preview · Outline H1–H4 · Ghim · Thùng rác · T
 > **Trạng thái Firebase thật (kiểm tra 2026-11-15 qua API, chưa mở Console):** project `db-ghichu` tồn tại và API key cũ vẫn còn hiệu lực (chưa bị xoá). Nhưng **Authentication chưa bật** (`identitytoolkit` trả `CONFIGURATION_NOT_FOUND`) và **Cloud Firestore API chưa bật / chưa tạo database** (`firestore.googleapis.com` trả 403 “API has not been used”) → app **chưa thể** chạy trên Firebase thật.
 > **Dev hiện tại:** Auth Emulator (`npx firebase emulators:start --only auth`), `.env.local` dùng key placeholder + `VITE_USE_FIREBASE_EMULATOR=true`. Máy chưa có **Java** nên Firestore emulator chưa chạy được → Phase 3 phải cài JDK 17+ hoặc bật Firestore thật.
 > Khi chuyển sang Firebase thật: đổi `VITE_USE_FIREBASE_EMULATOR=false` và dán key **đã restrict referrer** vào `.env.local` (không tái sử dụng giá trị key còn trong git history).
+> **Phase 3 xong 2026-11-15** trên emulator (JDK 21 portable ở `.tools/jre21`): `noteService` + `useNotes` + Sidebar + CRUD có xác nhận, và `npm run test:rules` 9/9 xanh (A không đọc/sửa/xoá được note của B, userId bất biến, chặn title > 200 ký tự / > 30 tab).
 
 Bước tiếp theo là **Phase 3 — Ghi chú (CRUD) + Sidebar**: `noteService`, `useNotes` realtime, Sidebar, tìm theo tiêu đề, tạo/đổi tên/xoá note, và **viết test Security Rules bằng Emulator** (làm ngay trong phase này).
 
