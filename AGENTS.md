@@ -35,13 +35,13 @@
 ## 2. Tính năng
 
 ### MVP (Phase 1–7)
-- [ ] Đăng ký / đăng nhập / đăng xuất / quên mật khẩu (Email + Password, Google)
-- [ ] Danh sách ghi chú (sidebar): tạo, đổi tên, xoá (có xác nhận), tìm theo tiêu đề, sắp xếp theo `updatedAt`
+- [x] Đăng ký / đăng nhập / đăng xuất / quên mật khẩu (Email + Password, Google)
+- [x] Danh sách ghi chú (sidebar): tạo, đổi tên, xoá (có xác nhận), tìm theo tiêu đề, sắp xếp theo `updatedAt`
 - [ ] Mỗi ghi chú có **nhiều tab**: thêm, đổi tên (double-click), xoá, kéo-thả đổi thứ tự
-- [ ] Editor: heading **H1–H4**, đoạn văn, **đậm / nghiêng / gạch ngang / code inline**, danh sách (•, 1., ☐ checklist), trích dẫn, code block, đường kẻ, link
-- [ ] Gõ cú pháp Markdown (`# `, `## `, `- `, `1. `, `> `, ``` ``` ```, `---`, `[] `) → tự chuyển thành định dạng
-- [ ] Toolbar nổi + menu `/` (slash command)
-- [ ] **Tự động lưu** (debounce) + trạng thái "Đang lưu… / Đã lưu / Lỗi"
+- [x] Editor: heading **H1–H4**, đoạn văn, **đậm / nghiêng / gạch ngang / code inline**, danh sách (•, 1., ☐ checklist), trích dẫn, code block, đường kẻ, link
+- [x] Gõ cú pháp Markdown (`# `, `## `, `- `, `1. `, `> `, ``` ``` ```, `---`, `[] `) → tự chuyển thành định dạng
+- [x] Toolbar nổi + menu `/` (slash command)
+- [x] **Tự động lưu** (debounce) + trạng thái "Đang lưu… / Đã lưu / Lỗi"
 - [ ] Realtime sync giữa các thiết bị (`onSnapshot`)
 - [ ] Offline cơ bản (Firestore persistent cache)
 - [ ] Dark / Light mode, responsive, trạng thái loading / empty / error đầy đủ
@@ -582,12 +582,14 @@ npm run emulators
 > Ghi chú: CRUD đã verify tay trên Firestore Emulator (tạo → đổi tên → xoá, doc đúng schema).
 > Rules test chạy bằng `npm run test:rules` và **cần emulator đang chạy** (xem 10.8).
 
-### Phase 4 — Editor
-- [ ] Tiptap: heading H1–H4, định dạng cơ bản, danh sách, checklist, quote, code block, hr, link
-- [ ] Markdown shortcuts, Toolbar, menu `/`
-- [ ] Typography đẹp (Mục 7.4), Light/Dark
-- [ ] Autosave + SaveStatus (Mục 7.5)
-- 🚪 Gõ `#`…`####` ra đúng heading; reload nội dung còn nguyên; round-trip Markdown ổn
+### Phase 4 — Editor ✅ XONG 2026-11-15
+- [x] Tiptap: heading H1–H4, định dạng cơ bản, danh sách, checklist, quote, code block, hr, link
+- [x] Markdown shortcuts, Toolbar, menu `/`
+- [x] Typography đẹp (Mục 7.4), Light/Dark
+- [x] Autosave + SaveStatus (Mục 7.5)
+- [x] 🚪 Gõ `#`…`####` ra đúng heading; reload nội dung còn nguyên; round-trip Markdown ổn
+
+> Ghi chú: editor gắn vào **tab đầu tiên** của note (tab bar để Phase 5). Autosave dùng `noteService.saveTabs` + debounce 1000 ms, giữ nội dung chưa ghi khi lỗi và có nút "Thử lại"; Ctrl/Cmd+S, blur, ẩn tab và rời trang đều cố gắng ghi nốt. Theme Sáng/Tối/Hệ thống lưu ở `localStorage` key `ghichu-theme`. Test: `tests/unit/markdown-roundtrip.test.ts` (mọi khối Mục 7.1), `autosave.test.ts` (debounce/flush/lỗi/retry/ghi tiếp), `save-status.test.tsx`, `slash-items.test.ts`. Đã verify tay trên Emulator: markdown shortcut `#`, `-`, `>`, `1.`, `[]`, menu `/` (lọc + Enter + Esc), autosave + reload, checklist, theme persist. Lưu ý: bundle production ~1,71 MB (535 kB gzip) — Tiptap + lowlight + Firebase; cân nhắc lazy-load editor ở Phase 6.
 
 ### Phase 5 — Tabs
 - [ ] Thêm / đổi tên / xoá / kéo-thả sắp xếp tab; nhớ tab đang mở qua `?tab=`
@@ -672,6 +674,9 @@ Chế độ Markdown thô/Preview · Outline H1–H4 · Ghim · Thùng rác · T
 | 2026-11-14 | Q13 — Package manager | **npm** | Máy đã có npm 12, pnpm chưa cài → không cần thêm bước cài đặt |
 | 2026-11-14 | Xác minh email khi đăng ký | **Tắt** ở MVP (mặc định, chưa chốt cứng) | Giảm ma sát đăng ký; sẽ hỏi lại ở Phase 2 |
 | 2026-11-14 | Phiên bản TypeScript | **6.0.3** (không dùng 7.x) | `typescript-eslint` 8.x khai báo peer `typescript <6.1.0`; TS 7 sẽ không lint được. Ghi đè version mặc định của template Vite 8 |
+| 2026-11-15 | Phiên bản Tiptap + đọc/ghi Markdown | **Tiptap 3.34.0** + `@tiptap/markdown` 3.34.0 (nền `marked`), `lowlight` 3.3.0 cho highlight code | Chủ dự án duyệt cài đủ bộ extension; giữ Q4 (lưu Markdown) thay vì JSON. `@tiptap/markdown` là bản early release → đã viết test round-trip mọi khối 7.1; nếu sau này gặp khối lệch thì báo và cân nhắc lưu JSON |
+| 2026-11-15 | Phạm vi Phase 4 | Editor chỉ áp dụng **tab đầu tiên** (`tabs` sorted by `order`) | Tab bar + chuyển tab thuộc Phase 5; giảm rủi ro mất dữ liệu khi đổi tab. `saveTabs` vẫn ghi nguyên mảng `tabs[]` nên Phase 5 chỉ cần thêm UI |
+| 2026-11-15 | Light/Dark | Thêm toggle **Sáng / Tối / Hệ thống**, lưu `localStorage` key `ghichu-theme` | Mục 10.5 cho phép localStorage cho tuỳ chọn UI; "Hệ thống" theo `prefers-color-scheme`. Áp theme trước render trong `main.tsx` để không nháy trắng |
 
 ---
 
@@ -685,7 +690,8 @@ Chế độ Markdown thô/Preview · Outline H1–H4 · Ghim · Thùng rác · T
 > **Dev hiện tại:** Auth Emulator (`npx firebase emulators:start --only auth`), `.env.local` dùng key placeholder + `VITE_USE_FIREBASE_EMULATOR=true`. Máy chưa có **Java** nên Firestore emulator chưa chạy được → Phase 3 phải cài JDK 17+ hoặc bật Firestore thật.
 > Khi chuyển sang Firebase thật: đổi `VITE_USE_FIREBASE_EMULATOR=false` và dán key **đã restrict referrer** vào `.env.local` (không tái sử dụng giá trị key còn trong git history).
 > **Phase 3 xong 2026-11-15** trên emulator (JDK 21 portable ở `.tools/jre21`): `noteService` + `useNotes` + Sidebar + CRUD có xác nhận, và `npm run test:rules` 9/9 xanh (A không đọc/sửa/xoá được note của B, userId bất biến, chặn title > 200 ký tự / > 30 tab).
+> **Phase 4 xong 2026-11-15** (emulator): `features/notes/editor/` (NoteEditor, Toolbar, SlashMenu, SaveStatus, extensions, useSlashMenu), `useAutosave` + `noteService.saveTabs`, typography `.note-editor` trong `index.css`, theme Sáng/Tối/Hệ thống. **45/45 test xanh** (8 file), `typecheck`/`lint`/`test`/`build` xanh. Bundle production 1,71 MB (535 kB gzip) — sẽ cân nhắc lazy-load editor ở Phase 6.
 
-Bước tiếp theo là **Phase 3 — Ghi chú (CRUD) + Sidebar**: `noteService`, `useNotes` realtime, Sidebar, tìm theo tiêu đề, tạo/đổi tên/xoá note, và **viết test Security Rules bằng Emulator** (làm ngay trong phase này).
+Bước tiếp theo là **Phase 5 — Tabs**: thêm/đổi tên/xoá/kéo-thả sắp xếp tab, nhớ tab đang mở qua `?tab=`, cảnh báo dung lượng note ≈ 700 KB. Trước khi làm cần chốt thư viện kéo-thả (thuộc Mục 10.2 #1).
 
 Khi bắt đầu một phiên mới, agent đọc lại file này và **không hỏi lại các mục đã chốt**; chỉ hỏi khi có mâu thuẫn hoặc khi sang quyết định mới thuộc Mục 10.2.
