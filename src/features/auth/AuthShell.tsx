@@ -23,7 +23,7 @@ export function AuthShell({ title, description, children, footer }: AuthShellPro
           <h1 className="text-xl font-semibold tracking-tight">GhiChu Notebook</h1>
           <p className="text-sm text-muted-foreground">Ghi chú nhanh · Viết là lưu</p>
         </div>
-        <Card>
+        <Card className="[--card-spacing:--spacing(6)]">
           <CardHeader>
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
