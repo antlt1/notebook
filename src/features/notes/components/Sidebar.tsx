@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Loader2, LogOut, Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ThemeToggle } from '@/features/theme/ThemeToggle'
 import type { NotesStatus } from '../hooks/useNotes'
 import type { Note } from '@/types/note'
 import { NoteListItem } from './NoteListItem'
@@ -130,20 +131,27 @@ export function Sidebar({
         </p>
       )}
 
-      <div className="flex items-center justify-between gap-2 border-t p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t p-3">
         <span className="truncate text-xs text-muted-foreground" title={userEmail ?? undefined}>
           {userEmail}
         </span>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={signingOut}
-          onClick={onSignOut}
-        >
-          {signingOut ? <Loader2 className="animate-spin" aria-hidden="true" /> : <LogOut aria-hidden="true" />}
-          Đăng xuất
-        </Button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={signingOut}
+            onClick={onSignOut}
+          >
+            {signingOut ? (
+              <Loader2 className="animate-spin" aria-hidden="true" />
+            ) : (
+              <LogOut aria-hidden="true" />
+            )}
+            Đăng xuất
+          </Button>
+        </div>
       </div>
     </aside>
   )

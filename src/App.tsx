@@ -6,24 +6,27 @@ import { PublicOnlyRoute } from '@/features/auth/PublicOnlyRoute'
 import { RegisterPage } from '@/features/auth/RegisterPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
 import { HomePage } from '@/features/notes/HomePage'
+import { ThemeProvider } from '@/features/theme/ThemeProvider'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route element={<PublicOnlyRoute />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-          </Route>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="n/:noteId" element={<HomePage />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route element={<PublicOnlyRoute />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+            </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="n/:noteId" element={<HomePage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
