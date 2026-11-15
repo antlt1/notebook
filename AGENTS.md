@@ -669,6 +669,10 @@ Chế độ Markdown thô/Preview · Outline H1–H4 · Ghim · Thùng rác · T
 > **Phase 1 đã dựng xong (2026-11-14).** Vite 8 + React 19 + TS 6, Tailwind v4 + shadcn/ui (preset Nova), ESLint 10 + Prettier, Vitest + RTL, `src/lib/firebase.ts`, `firebase.json` + rules + indexes, Firebase CLI 15. Emulator chạy được; `typecheck`/`lint`/`test`/`build` đều xanh.
 > **Phase 2 đã dựng xong (2026-11-14).** `authService`, `AuthProvider` + `useAuth`, `ProtectedRoute` / `PublicOnlyRoute`, 3 trang xác thực, map lỗi Auth → tiếng Việt, kết nối Emulator qua `VITE_USE_FIREBASE_EMULATOR`. Đã test tay trên Emulator: đăng ký → vào app → reload giữ phiên → đăng xuất → sai mật khẩu báo đúng tiếng Việt → đăng nhập lại → gửi email đặt lại mật khẩu. **Google popup chưa test được trên Emulator.**
 
+> **Trạng thái Firebase thật (kiểm tra 2026-11-15 qua API, chưa mở Console):** project `db-ghichu` tồn tại và API key cũ vẫn còn hiệu lực (chưa bị xoá). Nhưng **Authentication chưa bật** (`identitytoolkit` trả `CONFIGURATION_NOT_FOUND`) và **Cloud Firestore API chưa bật / chưa tạo database** (`firestore.googleapis.com` trả 403 “API has not been used”) → app **chưa thể** chạy trên Firebase thật.
+> **Dev hiện tại:** Auth Emulator (`npx firebase emulators:start --only auth`), `.env.local` dùng key placeholder + `VITE_USE_FIREBASE_EMULATOR=true`. Máy chưa có **Java** nên Firestore emulator chưa chạy được → Phase 3 phải cài JDK 17+ hoặc bật Firestore thật.
+> Khi chuyển sang Firebase thật: đổi `VITE_USE_FIREBASE_EMULATOR=false` và dán key **đã restrict referrer** vào `.env.local` (không tái sử dụng giá trị key còn trong git history).
+
 Bước tiếp theo là **Phase 3 — Ghi chú (CRUD) + Sidebar**: `noteService`, `useNotes` realtime, Sidebar, tìm theo tiêu đề, tạo/đổi tên/xoá note, và **viết test Security Rules bằng Emulator** (làm ngay trong phase này).
 
 Khi bắt đầu một phiên mới, agent đọc lại file này và **không hỏi lại các mục đã chốt**; chỉ hỏi khi có mâu thuẫn hoặc khi sang quyết định mới thuộc Mục 10.2.
